@@ -48,7 +48,8 @@ git clone "${uri}" "${destination}"
 
 cd "${destination}"
 
-git reset --hard "${commit_sha}"
+git checkout ${source_branch}
+#git reset --hard "${commit_sha}"
 
 jq -n "{
     version: ${version},
