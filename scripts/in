@@ -24,11 +24,13 @@ cat > "${payload}" <&0
 configure_ssl_verification "${payload}"
 
 uri="$(jq -r '.source.uri // ""' < "${payload}")"
+target_branch="$(jq -r '.source.branch // ""' < "${payload}")"
 username="$(jq -r '.source.username // ""' < "${payload}")"
 password="$(jq -r '.source.password // ""' < "${payload}")"
 private_key="$(jq -r '.source.private_key // ""' < "${payload}")"
 version="$(jq -r '.version // ""' < "${payload}")"
 commit_sha="$(echo "${version}" | jq -r '.sha // ""')"
+source_branch="$(echo "${version}" | jq -r '.source_branch // ""')"
 
 if [[ ! -z "${private_key}" ]]; then
     gitlab_host="$(echo "${uri}" | sed -rn 's/git@(.*):(.*)\.git/\1/p')"
@@ -42,11 +44,21 @@ else
     echo "default login ${username} password ${password}" > "${HOME}/.netrc" # Save credentials for git push below
 fi
 
-git clone "${uri}" "${destination}"
+git clone --branch ${target_branch} "${uri}" "${destination}"
 
 cd "${destination}"
 
-git reset --hard "${commit_sha}"
+git clean -f
+git reset --hard origin/"${target_branch}"
+git merge --no-ff origin/"${source_branch}"
+#git reset --hard "${commit_sha}"
+
+# TODO
+echo "${source_branch}" > ./source_branch.tmp
+if [ $? != 0 ]; then
+    echo "source branch file can not create."
+    exit 1
+fi
 
 jq -n "{
     version: ${version},

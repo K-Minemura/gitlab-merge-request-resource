@@ -22,6 +22,7 @@ resources:
 ```
 
 * `uri`: The location of the repository (required)
+* `branch`: The target branch
 * `private_token`: Your GitLab user's private token (required, can be found in your profile settings)
 * `private_key`: The private SSH key for SSH auth when pulling
 
