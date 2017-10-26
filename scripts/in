@@ -44,7 +44,7 @@ else
     echo "default login ${username} password ${password}" > "${HOME}/.netrc" # Save credentials for git push below
 fi
 
-git clone --branch ${source_branch} "${uri}" "${destination}"
+git clone "${uri}" "${destination}"
 
 cd "${destination}"
 
