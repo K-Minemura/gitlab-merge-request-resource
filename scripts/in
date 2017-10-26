@@ -48,7 +48,6 @@ git clone --branch ${source_branch} "${uri}" "${destination}"
 
 cd "${destination}"
 
-git checkout ${target_branch}
 git reset --hard "${commit_sha}"
 
 jq -n "{
