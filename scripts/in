@@ -24,6 +24,7 @@ cat > "${payload}" <&0
 configure_ssl_verification "${payload}"
 
 uri="$(jq -r '.source.uri // ""' < "${payload}")"
+target_branch="$(jq -r '.source.branch // ""' < "${payload}")"
 username="$(jq -r '.source.username // ""' < "${payload}")"
 password="$(jq -r '.source.password // ""' < "${payload}")"
 private_key="$(jq -r '.source.private_key // ""' < "${payload}")"
@@ -47,6 +48,7 @@ git clone --branch ${source_branch} "${uri}" "${destination}"
 
 cd "${destination}"
 
+git checkout ${target_branch}
 git reset --hard "${commit_sha}"
 
 jq -n "{
