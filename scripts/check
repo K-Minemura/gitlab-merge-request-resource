@@ -21,6 +21,7 @@ target_branch="$(jq -r '.source.branch // ""' < "${payload}")"
 private_token="$(jq -r '.source.private_token // ""' < "${payload}")"
 no_ssl="$(jq -r '.source.no_ssl // ""' < "${payload}")"
 version_sha="$(jq -r '.version.sha // ""' < "${payload}")"
+version_branch="$(jq -r '.version.source_branch // ""' < "${payload}")"
 
 gitlab_host="$(echo "${uri}" | sed -rn 's/(https?):\/\/([^\/]*)\/(.*)\.git/\2/p')"
 project_path="$(echo "${uri}" | sed -rn 's/(https?):\/\/([^\/]*)\/(.*)\.git/\3/p')"
@@ -61,7 +62,7 @@ new_versions="${new_versions#','}" # remove trailing comma
 new_versions="[${new_versions}]" # make JSON array
 
 if [ "${new_versions}" == '[]' ] && ! [ -z "${version_sha}" ]; then
-    new_versions="[{\"sha\":\"${version_sha}\", \"source_branch\":\"${target_branch}\"}]"
+    new_versions="[{\"sha\":\"${version_sha}\", \"source_branch\":\"${version_branch}\"}]"
 fi
 
 jq -n "${new_versions}" >&3
