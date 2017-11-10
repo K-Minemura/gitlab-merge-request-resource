@@ -47,7 +47,7 @@ for i in $(seq 0 $((num_mrs - 1))); do
     mr_sha="$(echo "${mr}" | jq -r '.sha')"
     mr_target="$(echo "${mr}" | jq -r '.target_branch')"
     mr_source="$(echo "${mr}" | jq -r '.source_branch')"
-    if [ "${mr_sha}" != "null" ]; then
+    if [ "${mr_sha}" != "null" ] && [ "${mr_source}" != "null" ]; then
         if [ -z "${target_branch}" ] || [ "${mr_target}" = "${target_branch}" ]; then
             mr_updated_at="$(curl -s -H "private-token: ${private_token}" "${protocol}://${gitlab_host}/api/v3/projects/$(urlencode "${project_path}")/repository/commits/${mr_sha}" \
                 | jq '.committed_date|.[:19]|strptime("%Y-%m-%dT%H:%M:%S")|mktime')"
@@ -61,7 +61,7 @@ done
 new_versions="${new_versions#','}" # remove trailing comma
 new_versions="[${new_versions}]" # make JSON array
 
-if [ "${new_versions}" == '[]' ] && ! [ -z "${version_sha}" ]; then
+if [ "${new_versions}" == '[]' ] && ! [ -z "${version_sha}" ] && ! [ -z "${version_branch}" ]; then
     new_versions="[{\"sha\":\"${version_sha}\", \"source_branch\":\"${version_branch}\"}]"
 fi
 
