@@ -28,6 +28,7 @@ target_branch="$(jq -r '.source.branch // ""' < "${payload}")"
 username="$(jq -r '.source.username // ""' < "${payload}")"
 password="$(jq -r '.source.password // ""' < "${payload}")"
 private_key="$(jq -r '.source.private_key // ""' < "${payload}")"
+target_branch="$(jq -r '.source.branch // ""' < "${payload}")"
 version="$(jq -r '.version // ""' < "${payload}")"
 commit_sha="$(echo "${version}" | jq -r '.sha // ""')"
 source_branch="$(echo "${version}" | jq -r '.source_branch // ""')"
@@ -49,7 +50,10 @@ git clone "${uri}" "${destination}"
 cd "${destination}"
 
 git checkout ${source_branch}
-#git reset --hard "${commit_sha}"
+git checkout ${target_branch}
+git checkout -b ${target_branch}-work
+git reset --hard "${commit_sha}"
+echo ${source_branch} > source_branch.tmp
 
 jq -n "{
     version: ${version},
